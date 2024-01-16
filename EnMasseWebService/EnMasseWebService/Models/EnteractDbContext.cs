@@ -17,6 +17,7 @@ namespace EnMasseWebService.Models
         public DbSet<User> Users { get; set; }
         public DbSet<Cafe> Cafes { get; set; }
         public DbSet<CafeUser> CafeUsers { get; set; }
+        public DbSet<CafeMessage> CafeMessages { get; set; }
     }
 }
 

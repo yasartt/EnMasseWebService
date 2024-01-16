@@ -4,6 +4,7 @@ using EnMasseWebService.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnMasseWebService.Migrations
 {
     [DbContext(typeof(EnteractDbContext))]
-    partial class EnteractDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240115215640_messageEntity")]
+    partial class messageEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,36 +41,6 @@ namespace EnMasseWebService.Migrations
                     b.ToTable("Cafes");
                 });
 
-            modelBuilder.Entity("EnMasseWebService.Models.Entities.CafeMessage", b =>
-                {
-                    b.Property<int>("CafeMessageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CafeMessageId"), 1L, 1);
-
-                    b.Property<int>("CafeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CafeMessageText")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("SenderUserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CafeMessageId");
-
-                    b.HasIndex("CafeId");
-
-                    b.HasIndex("SenderUserId");
-
-                    b.ToTable("CafeMessages");
-                });
-
             modelBuilder.Entity("EnMasseWebService.Models.Entities.CafeUser", b =>
                 {
                     b.Property<int>("CafeUserId")
@@ -90,6 +62,31 @@ namespace EnMasseWebService.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("CafeUsers");
+                });
+
+            modelBuilder.Entity("EnMasseWebService.Models.Entities.Message", b =>
+                {
+                    b.Property<int>("MessageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MessageId"), 1L, 1);
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MessageText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SenderUserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MessageId");
+
+                    b.HasIndex("SenderUserId");
+
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("EnMasseWebService.Models.Entities.User", b =>
@@ -117,25 +114,6 @@ namespace EnMasseWebService.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("EnMasseWebService.Models.Entities.CafeMessage", b =>
-                {
-                    b.HasOne("EnMasseWebService.Models.Entities.Cafe", "Cafe")
-                        .WithMany()
-                        .HasForeignKey("CafeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EnMasseWebService.Models.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("SenderUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cafe");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("EnMasseWebService.Models.Entities.CafeUser", b =>
                 {
                     b.HasOne("EnMasseWebService.Models.Entities.Cafe", "cafe")
@@ -153,6 +131,17 @@ namespace EnMasseWebService.Migrations
                     b.Navigation("User");
 
                     b.Navigation("cafe");
+                });
+
+            modelBuilder.Entity("EnMasseWebService.Models.Entities.Message", b =>
+                {
+                    b.HasOne("EnMasseWebService.Models.Entities.User", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Sender");
                 });
 #pragma warning restore 612, 618
         }

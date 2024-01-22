@@ -8,8 +8,8 @@ using EnMasseWebService.Services;
 
 namespace EnMasseWebService.Controllers
 {
-    [Route("api/[controller]/[action]")]
     [ApiController]
+    [Route("api/[controller]/[action]")]
     public class AuthController : ControllerBase
     {
         private readonly AuthService _authService;
@@ -19,29 +19,22 @@ namespace EnMasseWebService.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<string>> Login(LoginDTO loginDto)
+        public async Task<ActionResult<object>> Login(LoginDTO loginDto)
         {
             var loginResult = await _authService.LoginAsync(loginDto);
 
-            if(loginResult == 0)
+            if (loginResult.Item1) // If login is successful
             {
-                return Ok("The token");
+                return Ok(new
+                {
+                    Token = loginResult.Item2, // JWT token
+                    User = loginResult.Item3 // UserDTO
+                });
             }
-            else if(loginResult == -1)
+            else
             {
-                return BadRequest("What the fuck is this");
+                return BadRequest(new { ErrorMessage = loginResult.Item2 });
             }
-            else if (loginResult == -2)
-            {
-                return NotFound("User not found");
-            }
-            else if(loginResult == -3)
-            {
-                return BadRequest("Wrong password!");
-            }
-
-            return BadRequest("");
-
         }
 
         /**[HttpPost]

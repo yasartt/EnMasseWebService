@@ -4,23 +4,30 @@ using Microsoft.EntityFrameworkCore;
 using System.Net;
 using EnMasseWebService.Models;
 using EnMasseWebService.Models.DTOs;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+
 
 namespace EnMasseWebService.Services
 {
     public class AuthService
     {
         private readonly EnteractDbContext _context;
+        private readonly string _jwtSecretKey = "Ls270QPU4Eiwjf00kdre"; // Replace with your actual secret key
+
         public AuthService(EnteractDbContext enteractDbContext) {
             _context = enteractDbContext;
         }
 
-        public async Task<int> LoginAsync(LoginDTO loginDTO)
+        public async Task<(bool, string, UserDTO?)> LoginAsync(LoginDTO loginDTO)
         {
             try
             {
                 if (loginDTO == null)
                 {
-                    return -1;
+                    return (false, "Bad Request", null);
                 }
                 var userName = loginDTO.userName;
                 var password = loginDTO.password;
@@ -28,19 +35,53 @@ namespace EnMasseWebService.Services
                 var user = await _context.Users.SingleOrDefaultAsync(q => q.UserName == userName);
 
                 if (user == null) {
-                    return -2;
-                }
-                
-                if(password != user.Password)
-                {
-                    return -3;
+                    return (false, "Username Not Found", null);
                 }
 
-                return 0;
+                if (password != user.Password)
+                {
+                    return (false, "Incorrect Password", null);
+                }
+
+                var returningDTO = new UserDTO()
+                {
+                    UserId = user.UserId,
+                    UserName = userName,
+                    Email = user.Email,
+                };
+
+                var token = GenerateJwtToken(returningDTO);
+
+                return (true, token, returningDTO);
+
             }
             catch {
-                return -5;
+                return (false, "Server Error", null);
             }
+        }
+
+        private string GenerateJwtToken(UserDTO userDTO)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSecretKey));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, userDTO.UserName),
+                new Claim(ClaimTypes.NameIdentifier, userDTO.UserId.ToString()),
+                new Claim(ClaimTypes.Email, userDTO.Email),
+                // Add additional claims as needed
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: "your-issuer", // Replace with your actual issuer
+                audience: "your-audience", // Replace with your actual audience
+                claims: claims,
+                expires: DateTime.UtcNow.AddYears(1), // Token is valid for 1 year
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

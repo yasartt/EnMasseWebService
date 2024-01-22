@@ -22,6 +22,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CafeService>();
+builder.Services.AddScoped<DailyService>();
 
 
 builder.Services.AddControllers();
@@ -51,8 +52,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
-app.UseHttpsRedirection();
 
 app.UseHttpsRedirection();
 

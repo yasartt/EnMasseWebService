@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EnMasseWebService.Controllers
 {
-    [Route("api/[controller]/[action]")]
     [ApiController]
+    [Route("api/[controller]/[action]")]
     public class CafeController : ControllerBase
     {
         private readonly CafeService _cafeService;

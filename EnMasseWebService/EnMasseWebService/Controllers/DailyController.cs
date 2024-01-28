@@ -22,17 +22,47 @@ namespace EnMasseWebService.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<bool>> AddNewDaily(DailyDTO newDailyDTO)
+        public async Task<ActionResult<Daily>> AddNewDaily(DailyDTO newDailyDTO)
         {
             if (newDailyDTO == null)
             {
                 return BadRequest();
             }
 
-            
-            
-            return Ok(newDailyDTO);
-            
+            var newDaily = await _dailyService.AddNewDailyAsync(newDailyDTO);
+
+            if (newDaily != null && newDailyDTO.Images != null && newDailyDTO.Images.Any())
+            {
+                var uploadedImages = await _dailyService.UploadImagesAsync(newDailyDTO.Images, newDaily.DailyId);
+            }
+
+            return Ok(newDaily);
+        }
+
+        [HttpGet("{dailyId}")]
+        public async Task<ActionResult<List<ImageDTO>>> GetImagesByDailyId(int dailyId)
+        {
+            var images = await _dailyService.GetImagesByDailyIdAsync(dailyId);
+
+            if (images == null || images.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return images;
+        }
+
+        [HttpGet("{userId}/{lastTime}")]
+        public async Task<ActionResult<List<DailyView>>> GetContactDailiesByUser(int userId, DateTime lastTime)
+        {
+            var dailies = await _dailyService.GetContactDailiesByUserIdAsync(userId, lastTime);
+
+            if (dailies == null || dailies.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return dailies;
         }
     }
 }

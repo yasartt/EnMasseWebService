@@ -38,7 +38,7 @@ namespace EnMasseWebService.Models
         public DbSet<CafeMessage> CafeMessages { get; set; }
 
         public DbSet<Daily> Dailies { get; set; }
-        public DbSet<DailyType> DailyTypes { get; set; }
+        //public DbSet<DailyType> DailyTypes { get; set; }
         public DbSet<UserContacts> UserContacts { get; set; }
 
     }

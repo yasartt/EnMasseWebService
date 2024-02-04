@@ -80,26 +80,42 @@ namespace EnMasseWebService.Services
 
         public async Task<List<DailyView>> GetContactDailiesByUserIdAsync(int userId, DateTime lastTime)
         {
-            var dailiesQuery = from contact in _enteractDbContext.UserContacts
-                               join daily in _enteractDbContext.Dailies on contact.UserId equals userId
-                               where daily.UserId == contact.ContactId
-                               select new DailyView
-                               {
-                                   UserId = contact.ContactId,
-                                   Caption = daily.Caption,
-                                   Created = daily.Created,
-                                   DailyId = daily.DailyId
-                               };
+            // Query for the user's contacts' dailies
+            var contactDailiesQuery = from contact in _enteractDbContext.UserContacts
+                                      join daily in _enteractDbContext.Dailies on contact.UserId equals userId
+                                      where daily.UserId == contact.ContactId
+                                      select new DailyView
+                                      {
+                                          UserId = contact.ContactId,
+                                          Caption = daily.Caption,
+                                          Created = daily.Created,
+                                          DailyId = daily.DailyId
+                                      };
 
-            var dailies = await dailiesQuery.ToListAsync();
+            // Query for the user's own dailies
+            var userDailiesQuery = from daily in _enteractDbContext.Dailies
+                                   where daily.UserId == userId
+                                   select new DailyView
+                                   {
+                                       UserId = userId,
+                                       Caption = daily.Caption,
+                                       Created = daily.Created,
+                                       DailyId = daily.DailyId
+                                   };
 
-            foreach(var dailie in dailies)
+            // Combining both queries
+            var combinedQuery = contactDailiesQuery.Union(userDailiesQuery);
+
+            var dailies = await combinedQuery.ToListAsync();
+
+            foreach (var dailie in dailies)
             {
                 dailie.Images = await GetImagesByDailyIdAsync(dailie.DailyId);
             }
 
             return dailies;
         }
+
     }
 }
 

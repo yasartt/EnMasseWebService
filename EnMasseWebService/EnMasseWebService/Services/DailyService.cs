@@ -117,26 +117,32 @@ namespace EnMasseWebService.Services
         public async Task<List<DailyView>> GetContactDailiesByUserIdAsync(int userId, DateTime lastTime)
         {
             // Query for the user's contacts' dailies
-            var contactDailiesQuery = from contact in _enteractDbContext.UserContacts
-                                      join daily in _enteractDbContext.Dailies on contact.UserId equals userId
-                                      where daily.UserId == contact.ContactId
+            var contactDailiesQuery = from userContact in _enteractDbContext.UserContacts
+                                      join daily in _enteractDbContext.Dailies on userContact.UserId equals userId
+                                      join user in _enteractDbContext.Users on userContact.UserId equals user.UserId
+                                      where daily.UserId == userContact.ContactId
                                       select new DailyView
                                       {
-                                          UserId = contact.ContactId,
+                                          UserId = userContact.ContactId,
                                           Caption = daily.Caption,
                                           Created = daily.Created,
-                                          DailyId = daily.DailyId
+                                          DailyId = daily.DailyId,
+                                          UserName = user.UserName,
+                                          UserPhotoId = user.UserPhotoId,
                                       };
 
             // Query for the user's own dailies
             var userDailiesQuery = from daily in _enteractDbContext.Dailies
+                                   join user in _enteractDbContext.Users on daily.UserId equals user.UserId
                                    where daily.UserId == userId
                                    select new DailyView
                                    {
                                        UserId = userId,
                                        Caption = daily.Caption,
                                        Created = daily.Created,
-                                       DailyId = daily.DailyId
+                                       DailyId = daily.DailyId,
+                                       UserName = user.UserName,
+                                       UserPhotoId = user.UserPhotoId,
                                    };
 
             // Combining both queries

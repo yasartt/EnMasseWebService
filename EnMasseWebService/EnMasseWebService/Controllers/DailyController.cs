@@ -64,5 +64,18 @@ namespace EnMasseWebService.Controllers
 
             return dailies;
         }
+
+        [HttpGet("{userId}/{lastTime}")]
+        public async Task<ActionResult<List<DailyView>>> GetEntheriaDailiesByUser(int userId, DateTime lastTime)
+        {
+            var dailies = await _dailyService.GetEntheriaDailiesByUserIdAsync(userId, lastTime);
+
+            if (dailies == null || dailies.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return dailies;
+        }
     }
 }

@@ -152,6 +152,25 @@ namespace EnMasseWebService.Services
             return dailies;
         }
 
+        public async Task<List<DailyView>> GetEntheriaDailiesByUserIdAsync(int userId, DateTime lastTime)
+        {
+
+            var dailies = await _enteractDbContext.Dailies.Select(q => new DailyView()
+            {
+                UserId = userId,
+                Caption = q.Caption,
+                Created = q.Created,
+                DailyId = q.DailyId
+            }).ToListAsync();
+
+            foreach (var dailie in dailies)
+            {
+                dailie.Images = await GetImagesByDailyIdAsync(dailie.DailyId);
+            }
+
+            return dailies;
+        }
+
     }
 }
 

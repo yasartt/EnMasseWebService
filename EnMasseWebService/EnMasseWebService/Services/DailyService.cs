@@ -140,7 +140,7 @@ namespace EnMasseWebService.Services
                                    };
 
             // Combining both queries
-            var combinedQuery = contactDailiesQuery.Union(userDailiesQuery);
+            var combinedQuery = contactDailiesQuery.Union(userDailiesQuery).OrderBy(q => q.Created);
 
             var dailies = await combinedQuery.ToListAsync();
 
@@ -161,7 +161,7 @@ namespace EnMasseWebService.Services
                 Caption = q.Caption,
                 Created = q.Created,
                 DailyId = q.DailyId
-            }).ToListAsync();
+            }).OrderBy(q => q.Created).ToListAsync();
 
             foreach (var dailie in dailies)
             {

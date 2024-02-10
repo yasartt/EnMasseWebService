@@ -160,22 +160,27 @@ namespace EnMasseWebService.Services
 
         public async Task<List<DailyView>> GetEntheriaDailiesByUserIdAsync(int userId, DateTime lastTime)
         {
+            // Assuming _enteractDbContext.Users is your DbSet<User>
+            var dailies = await (from daily in _enteractDbContext.Dailies
+                                 join user in _enteractDbContext.Users on daily.UserId equals user.UserId
+                                 where daily.UserId == userId //&& daily.Created <= lastTime
+                                 select new DailyView
+                                 {
+                                     UserId = daily.UserId,
+                                     UserName = user.UserName,
+                                     Caption = daily.Caption,
+                                     Created = daily.Created,
+                                     DailyId = daily.DailyId
+                                 }).OrderBy(q => q.Created).ToListAsync();
 
-            var dailies = await _enteractDbContext.Dailies.Select(q => new DailyView()
+            foreach (var daily in dailies)
             {
-                UserId = userId,
-                Caption = q.Caption,
-                Created = q.Created,
-                DailyId = q.DailyId
-            }).OrderBy(q => q.Created).ToListAsync();
-
-            foreach (var dailie in dailies)
-            {
-                dailie.Images = await GetImagesByDailyIdAsync(dailie.DailyId);
+                daily.Images = await GetImagesByDailyIdAsync(daily.DailyId);
             }
 
             return dailies;
         }
+
 
     }
 }

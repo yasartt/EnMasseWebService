@@ -119,7 +119,7 @@ namespace EnMasseWebService.Services
             // Query for the user's contacts' dailies
             var contactDailiesQuery = from userContact in _enteractDbContext.UserContacts
                                       join daily in _enteractDbContext.Dailies on userContact.UserId equals userId
-                                      join user in _enteractDbContext.Users on userContact.UserId equals user.UserId
+                                      join user in _enteractDbContext.Users on userContact.ContactId equals user.UserId
                                       where daily.UserId == userContact.ContactId
                                       select new DailyView
                                       {
@@ -158,12 +158,13 @@ namespace EnMasseWebService.Services
             return dailies;
         }
 
-        public async Task<List<DailyView>> GetEntheriaDailiesByUserIdAsync(int userId, DateTime lastTime)
+        public async Task<List<DailyView>> GetEntheriaDailiesByUserIdAsync(int userId, DateTime? lastTime, int? lastDailyId)
         {
             // Assuming _enteractDbContext.Users is your DbSet<User>
             var dailies = await (from daily in _enteractDbContext.Dailies
                                  join user in _enteractDbContext.Users on daily.UserId equals user.UserId
-                                 where daily.UserId == userId //&& daily.Created <= lastTime
+                                 where daily.Created <= lastTime && daily.DailyId != lastDailyId
+                                 //where daily.UserId == userId //&& daily.Created <= lastTime
                                  select new DailyView
                                  {
                                      UserId = daily.UserId,

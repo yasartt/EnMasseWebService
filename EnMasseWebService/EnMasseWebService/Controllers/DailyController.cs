@@ -65,10 +65,10 @@ namespace EnMasseWebService.Controllers
             return dailies;
         }
 
-        [HttpGet("{userId}/{lastTime}")]
-        public async Task<ActionResult<List<DailyView>>> GetEntheriaDailiesByUser(int userId, DateTime lastTime)
+        [HttpPost]
+        public async Task<ActionResult<List<DailyView>>> GetEntheriaDailiesByUser(DailyListDTO dailyListDTO)
         {
-            var dailies = await _dailyService.GetEntheriaDailiesByUserIdAsync(userId, lastTime);
+            var dailies = await _dailyService.GetEntheriaDailiesByUserIdAsync(dailyListDTO.UserId, dailyListDTO.LastTime, dailyListDTO.LastDailyId);
 
             if (dailies == null || dailies.Count == 0)
             {

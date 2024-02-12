@@ -163,7 +163,7 @@ namespace EnMasseWebService.Services
             // Assuming _enteractDbContext.Users is your DbSet<User>
             var dailies = await (from daily in _enteractDbContext.Dailies
                                  join user in _enteractDbContext.Users on daily.UserId equals user.UserId
-                                 where daily.Created <= lastTime && daily.DailyId != lastDailyId
+                                 where daily.Created >= lastTime && daily.DailyId != lastDailyId
                                  //where daily.UserId == userId //&& daily.Created <= lastTime
                                  select new DailyView
                                  {

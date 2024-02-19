@@ -160,11 +160,14 @@ namespace EnMasseWebService.Services
 
         public async Task<List<DailyView>> GetEntheriaDailiesByUserIdAsync(int userId, DateTime? lastTime, int? lastDailyId)
         {
+            var limitTime = DateTime.Now.AddDays(-7);
+
             // Adjusting the query to account for lastDailyId being null.
             var dailies = await (from daily in _enteractDbContext.Dailies
                                  join user in _enteractDbContext.Users on daily.UserId equals user.UserId
                                  where (lastTime == null || daily.Created >= lastTime)
                                        && (lastDailyId == null || daily.DailyId != lastDailyId)
+                                       && daily.Created >= limitTime
                                  // Uncomment and adjust the following line if filtering by userId is required.
                                  // && daily.UserId == userId
                                  select new DailyView

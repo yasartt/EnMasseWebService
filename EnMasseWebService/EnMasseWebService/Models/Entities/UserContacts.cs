@@ -9,10 +9,9 @@ namespace EnMasseWebService.Models.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Required]
         public int UserContactId { get; set; }
-        public int UserId { get; set; }
-        public int ContactId { get; set; }
-        public User User { get; set; }
-        public User Contact { get; set; }
-
+        public Guid User1Id { get; set; }
+        public Guid User2Id { get; set; }
+        public User User1 { get; set; }
+        public User User2 { get; set; }
     }
 }

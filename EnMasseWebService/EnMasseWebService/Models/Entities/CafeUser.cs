@@ -11,10 +11,10 @@ namespace EnMasseWebService.Models.Entities
         public int CafeUserId { get; set; }
 
         [ForeignKey("Cafe")]
-        public int CafeId { get; set; }
+        public Guid CafeId { get; set; }
 
         [ForeignKey("User")]
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
 
         public User User { get; set; }
 

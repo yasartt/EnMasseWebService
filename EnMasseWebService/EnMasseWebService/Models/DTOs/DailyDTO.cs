@@ -2,7 +2,7 @@
 {
     public class DailyDTO
     {
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
 
         public string? Caption { get; set; }
 

@@ -45,7 +45,7 @@ namespace SignalRChat
             }   
         }
 
-        public Task SendConnectorUser(int cafeId)
+        public Task SendConnectorUser(Guid cafeId)
         {
             var users = _connection.Values.Where(q => q.CafeId == cafeId).ToList();
 

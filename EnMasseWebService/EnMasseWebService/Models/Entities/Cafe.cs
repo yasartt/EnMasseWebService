@@ -8,7 +8,7 @@ namespace EnMasseWebService.Models.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Required]
-        public int CafeId { get; set; }
+        public Guid CafeId { get; set; } = Guid.NewGuid();
         public string Name { get; set; }
     }
 }

@@ -3,7 +3,7 @@
     public class DailyView
     {
         public int DailyId { get; set; }
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         public string? Caption { get; set; }
         public DateTime? Created { get; set; }
         public List<ImageDTO>? Images { get; set; }

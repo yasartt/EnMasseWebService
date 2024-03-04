@@ -114,25 +114,28 @@ namespace EnMasseWebService.Services
             return await cursor.ToListAsync();*/
         }
 
-        public async Task<List<DailyView>> GetContactDailiesByUserIdAsync(int userId, DateTime lastTime)
+        public async Task<List<DailyView>> GetContactDailiesByUserIdAsync(Guid userId, DateTime lastTime)
         {
-            // Query for the user's contacts' dailies
+
             var contactDailiesQuery = from userContact in _enteractDbContext.UserContacts
-                                      join daily in _enteractDbContext.Dailies on userContact.UserId equals userId
-                                      join user in _enteractDbContext.Users on userContact.ContactId equals user.UserId
-                                      where daily.UserId == userContact.ContactId
-                                      select new DailyView
-                                      {
-                                          UserId = userContact.ContactId,
-                                          Caption = daily.Caption,
-                                          Created = daily.Created,
-                                          DailyId = daily.DailyId,
-                                          UserName = user.UserName,
-                                          UserPhotoId = user.UserPhotoId,
-                                      };
+                                 from daily in _enteractDbContext.Dailies
+                                 from user in _enteractDbContext.Users
+                                 where (userContact.User1Id == userId && daily.UserId == userContact.User2Id && user.UserId == userContact.User2Id)
+                                    || (userContact.User2Id == userId && daily.UserId == userContact.User1Id && user.UserId == userContact.User1Id)
+                                 select new DailyView
+                                 {
+                                     UserId = daily.UserId,
+                                     Caption = daily.Caption,
+                                     Created = daily.Created,
+                                     DailyId = daily.DailyId,
+                                     UserName = user.UserName,
+                                     UserPhotoId = user.UserPhotoId,
+                                 };
+
+            var contactDailies = await contactDailiesQuery.ToListAsync();
 
             // Query for the user's own dailies
-            var userDailiesQuery = from daily in _enteractDbContext.Dailies
+            /**var userDailiesQuery = from daily in _enteractDbContext.Dailies
                                    join user in _enteractDbContext.Users on daily.UserId equals user.UserId
                                    where daily.UserId == userId
                                    select new DailyView
@@ -148,14 +151,14 @@ namespace EnMasseWebService.Services
             // Combining both queries
             var combinedQuery = contactDailiesQuery.Union(userDailiesQuery).OrderBy(q => q.Created);
 
-            var dailies = await combinedQuery.ToListAsync();
+            var dailies = await combinedQuery.ToListAsync();*/
 
-            foreach (var dailie in dailies)
+            foreach (var dailie in contactDailies)
             {
                 dailie.Images = await GetImagesByDailyIdAsync(dailie.DailyId);
             }
 
-            return dailies;
+            return contactDailies;
         }
 
         public async Task<List<DailyView>> GetEntheriaDailiesByUserIdAsync(int userId, DateTime? lastTime, int? lastDailyId)

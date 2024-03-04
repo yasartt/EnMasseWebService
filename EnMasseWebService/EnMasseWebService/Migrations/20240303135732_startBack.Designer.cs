@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnMasseWebService.Migrations
 {
     [DbContext(typeof(EnteractDbContext))]
-    [Migration("20240128174028_fixForTest")]
-    partial class fixForTest
+    [Migration("20240303135732_startBack")]
+    partial class startBack
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -26,11 +26,9 @@ namespace EnMasseWebService.Migrations
 
             modelBuilder.Entity("EnMasseWebService.Models.Entities.Cafe", b =>
                 {
-                    b.Property<int>("CafeId")
+                    b.Property<Guid>("CafeId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CafeId"), 1L, 1);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -41,36 +39,6 @@ namespace EnMasseWebService.Migrations
                     b.ToTable("Cafes");
                 });
 
-            modelBuilder.Entity("EnMasseWebService.Models.Entities.CafeMessage", b =>
-                {
-                    b.Property<int>("CafeMessageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CafeMessageId"), 1L, 1);
-
-                    b.Property<int>("CafeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CafeMessageText")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("SenderUserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CafeMessageId");
-
-                    b.HasIndex("CafeId");
-
-                    b.HasIndex("SenderUserId");
-
-                    b.ToTable("CafeMessages");
-                });
-
             modelBuilder.Entity("EnMasseWebService.Models.Entities.CafeUser", b =>
                 {
                     b.Property<int>("CafeUserId")
@@ -79,11 +47,11 @@ namespace EnMasseWebService.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CafeUserId"), 1L, 1);
 
-                    b.Property<int>("CafeId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CafeId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("CafeUserId");
 
@@ -92,6 +60,35 @@ namespace EnMasseWebService.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("CafeUsers");
+                });
+
+            modelBuilder.Entity("EnMasseWebService.Models.Entities.ContactRequest", b =>
+                {
+                    b.Property<int>("RequestId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestId"), 1L, 1);
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ReceiverId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("RequestId");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("ContactRequests");
                 });
 
             modelBuilder.Entity("EnMasseWebService.Models.Entities.Daily", b =>
@@ -108,8 +105,8 @@ namespace EnMasseWebService.Migrations
                     b.Property<DateTime?>("Created")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("DailyId");
 
@@ -118,16 +115,34 @@ namespace EnMasseWebService.Migrations
                     b.ToTable("Dailies");
                 });
 
-            modelBuilder.Entity("EnMasseWebService.Models.Entities.User", b =>
+            modelBuilder.Entity("EnMasseWebService.Models.Entities.DailyImage", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("DailyImageId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DailyImageId"), 1L, 1);
+
+                    b.Property<int>("DailyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("DailyImageId");
+
+                    b.HasIndex("DailyId");
+
+                    b.ToTable("DailyImages");
+                });
+
+            modelBuilder.Entity("EnMasseWebService.Models.Entities.User", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
@@ -136,6 +151,9 @@ namespace EnMasseWebService.Migrations
 
                     b.Property<string>("UserName")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserPhotoId")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId");
@@ -151,38 +169,19 @@ namespace EnMasseWebService.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserContactId"), 1L, 1);
 
-                    b.Property<int>("ContactId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("User1Id")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("User2Id")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("UserContactId");
 
-                    b.HasIndex("ContactId");
+                    b.HasIndex("User1Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("User2Id");
 
                     b.ToTable("UserContacts");
-                });
-
-            modelBuilder.Entity("EnMasseWebService.Models.Entities.CafeMessage", b =>
-                {
-                    b.HasOne("EnMasseWebService.Models.Entities.Cafe", "Cafe")
-                        .WithMany()
-                        .HasForeignKey("CafeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EnMasseWebService.Models.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("SenderUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cafe");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EnMasseWebService.Models.Entities.CafeUser", b =>
@@ -204,6 +203,23 @@ namespace EnMasseWebService.Migrations
                     b.Navigation("cafe");
                 });
 
+            modelBuilder.Entity("EnMasseWebService.Models.Entities.ContactRequest", b =>
+                {
+                    b.HasOne("EnMasseWebService.Models.Entities.User", "Receiver")
+                        .WithMany("ReceivedRequests")
+                        .HasForeignKey("ReceiverId")
+                        .IsRequired();
+
+                    b.HasOne("EnMasseWebService.Models.Entities.User", "Sender")
+                        .WithMany("SentRequests")
+                        .HasForeignKey("SenderId")
+                        .IsRequired();
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Sender");
+                });
+
             modelBuilder.Entity("EnMasseWebService.Models.Entities.Daily", b =>
                 {
                     b.HasOne("EnMasseWebService.Models.Entities.User", "User")
@@ -215,26 +231,41 @@ namespace EnMasseWebService.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("EnMasseWebService.Models.Entities.DailyImage", b =>
+                {
+                    b.HasOne("EnMasseWebService.Models.Entities.Daily", "Daily")
+                        .WithMany()
+                        .HasForeignKey("DailyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Daily");
+                });
+
             modelBuilder.Entity("EnMasseWebService.Models.Entities.UserContacts", b =>
                 {
-                    b.HasOne("EnMasseWebService.Models.Entities.User", "Contact")
-                        .WithMany("ContactUsers")
-                        .HasForeignKey("ContactId")
-                        .IsRequired();
-
-                    b.HasOne("EnMasseWebService.Models.Entities.User", "User")
+                    b.HasOne("EnMasseWebService.Models.Entities.User", "User1")
                         .WithMany("UserContacts")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("User1Id")
                         .IsRequired();
 
-                    b.Navigation("Contact");
+                    b.HasOne("EnMasseWebService.Models.Entities.User", "User2")
+                        .WithMany("ContactUsers")
+                        .HasForeignKey("User2Id")
+                        .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("User1");
+
+                    b.Navigation("User2");
                 });
 
             modelBuilder.Entity("EnMasseWebService.Models.Entities.User", b =>
                 {
                     b.Navigation("ContactUsers");
+
+                    b.Navigation("ReceivedRequests");
+
+                    b.Navigation("SentRequests");
 
                     b.Navigation("UserContacts");
                 });

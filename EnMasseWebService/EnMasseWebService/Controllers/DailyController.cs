@@ -53,7 +53,7 @@ namespace EnMasseWebService.Controllers
         }
 
         [HttpGet("{userId}/{lastTime}")]
-        public async Task<ActionResult<List<DailyView>>> GetContactDailiesByUser(int userId, DateTime lastTime)
+        public async Task<ActionResult<List<DailyView>>> GetContactDailiesByUser(Guid userId, DateTime lastTime)
         {
             var dailies = await _dailyService.GetContactDailiesByUserIdAsync(userId, lastTime);
 

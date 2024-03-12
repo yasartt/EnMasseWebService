@@ -40,7 +40,7 @@ namespace EnMasseWebService.Controllers
         }
 
         [HttpGet("{dailyId}")]
-        public async Task<ActionResult<List<ImageDTO>>> GetImagesByDailyId(int dailyId)
+        public async Task<ActionResult<List<ImageDTO>>> GetImagesByDailyId(Guid dailyId)
         {
             var images = await _dailyService.GetImagesByDailyIdAsync(dailyId);
 
@@ -52,10 +52,10 @@ namespace EnMasseWebService.Controllers
             return images;
         }
 
-        [HttpGet("{userId}/{lastTime}")]
-        public async Task<ActionResult<List<DailyView>>> GetContactDailiesByUser(Guid userId, DateTime lastTime)
+        [HttpPost]
+        public async Task<ActionResult<List<DailyView>>> GetContactDailiesByUser([FromBody] DailyListDTO dailyListDTO)
         {
-            var dailies = await _dailyService.GetContactDailiesByUserIdAsync(userId, lastTime);
+            var dailies = await _dailyService.GetContactDailiesByUserIdAsync(dailyListDTO.UserId, dailyListDTO.LastTime, dailyListDTO.LastDailyId);
 
             if (dailies == null || dailies.Count == 0)
             {

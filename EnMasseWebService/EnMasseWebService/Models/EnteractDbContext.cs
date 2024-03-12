@@ -57,7 +57,6 @@ namespace EnMasseWebService.Models
         public DbSet<User> Users { get; set; }
         public DbSet<Cafe> Cafes { get; set; }
         public DbSet<CafeUser> CafeUsers { get; set; }
-        public DbSet<DailyImage> DailyImages { get; set; }
         public DbSet<Daily> Dailies { get; set; }
         //public DbSet<DailyType> DailyTypes { get; set; }
         public DbSet<UserContacts> UserContacts { get; set; }

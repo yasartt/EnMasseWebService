@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnMasseWebService.Migrations
 {
     [DbContext(typeof(EnteractDbContext))]
-    [Migration("20240303135732_startBack")]
-    partial class startBack
+    [Migration("20240305080551_dailyImagesDeleted")]
+    partial class dailyImagesDeleted
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -93,11 +93,9 @@ namespace EnMasseWebService.Migrations
 
             modelBuilder.Entity("EnMasseWebService.Models.Entities.Daily", b =>
                 {
-                    b.Property<int>("DailyId")
+                    b.Property<Guid>("DailyId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DailyId"), 1L, 1);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Caption")
                         .HasColumnType("nvarchar(max)");
@@ -113,27 +111,6 @@ namespace EnMasseWebService.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Dailies");
-                });
-
-            modelBuilder.Entity("EnMasseWebService.Models.Entities.DailyImage", b =>
-                {
-                    b.Property<int>("DailyImageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DailyImageId"), 1L, 1);
-
-                    b.Property<int>("DailyId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("DailyImageId");
-
-                    b.HasIndex("DailyId");
-
-                    b.ToTable("DailyImages");
                 });
 
             modelBuilder.Entity("EnMasseWebService.Models.Entities.User", b =>
@@ -229,17 +206,6 @@ namespace EnMasseWebService.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("EnMasseWebService.Models.Entities.DailyImage", b =>
-                {
-                    b.HasOne("EnMasseWebService.Models.Entities.Daily", "Daily")
-                        .WithMany()
-                        .HasForeignKey("DailyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Daily");
                 });
 
             modelBuilder.Entity("EnMasseWebService.Models.Entities.UserContacts", b =>

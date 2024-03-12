@@ -8,7 +8,7 @@ namespace EnMasseWebService.Models.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Required]
-        public int DailyId { get; set; }
+        public Guid DailyId { get; set; }
 
         [ForeignKey("User")]
         public Guid UserId { get; set; }

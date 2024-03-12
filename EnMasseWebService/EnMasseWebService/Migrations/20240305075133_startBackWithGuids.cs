@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace EnMasseWebService.Migrations
 {
-    public partial class startBack : Migration
+    public partial class startBackWithGuids : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -92,8 +92,7 @@ namespace EnMasseWebService.Migrations
                 name: "Dailies",
                 columns: table => new
                 {
-                    DailyId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DailyId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Caption = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -139,7 +138,7 @@ namespace EnMasseWebService.Migrations
                 {
                     DailyImageId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DailyId = table.Column<int>(type: "int", nullable: false),
+                    DailyId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Id = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>

@@ -12,7 +12,7 @@ namespace EnMasseWebService.Models.DTOs
         [BsonElement("Name")]
         public string ImageName { get; set; } = null!;
 
-        public int DailyId { get; set; }
+        public Guid DailyId { get; set; }
 
     }
 }

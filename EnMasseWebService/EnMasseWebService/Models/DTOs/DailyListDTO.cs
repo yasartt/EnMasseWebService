@@ -2,10 +2,10 @@
 {
     public class DailyListDTO
     {
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
 
         public DateTime? LastTime { get; set; }
 
-        public int? LastDailyId { get; set; }
+        public Guid? LastDailyId { get; set; }
     }
 }

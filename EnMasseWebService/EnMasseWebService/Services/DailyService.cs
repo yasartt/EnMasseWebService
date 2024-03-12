@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Bson;
+using System;
+using System.Collections.Generic;
 
 namespace EnMasseWebService.Services
 {
@@ -45,7 +47,7 @@ namespace EnMasseWebService.Services
             
         }
 
-        public async Task<List<ImageDTO>> UploadImagesAsync(List<ImageIncomingDTO> imageIncomingDTOs, int dailyId)
+        public async Task<List<ImageDTO>> UploadImagesAsync(List<ImageIncomingDTO> imageIncomingDTOs, Guid dailyId)
         {
             try
             {
@@ -62,13 +64,7 @@ namespace EnMasseWebService.Services
                     await _imagesCollection.InsertOneAsync(imageDTO);
                     uploadedImages.Add(imageDTO);
 
-                    DailyImage newImageEntity = new DailyImage()
-                    {
-                        Id = imageDTO.Id,
-                        DailyId = dailyId
-                    };
-
-                    await _enteractDbContext.DailyImages.AddAsync(newImageEntity);
+                   
                     await _enteractDbContext.SaveChangesAsync();
                 }
 
@@ -80,88 +76,50 @@ namespace EnMasseWebService.Services
             }
         }
 
-        public async Task<List<ImageDTO>> GetImagesByDailyIdAsync(int dailyId)
+        public async Task<List<ImageDTO>> GetImagesByDailyIdAsync(Guid dailyId)
         {
-            var dailyImages = await _enteractDbContext.DailyImages.Where(q => q.DailyId == dailyId).ToListAsync();
-
-            var imageIds = dailyImages.Select(di => di.Id).ToList();
-
-            var images = new List<ImageDTO>();
-
-            foreach (var imageId in imageIds)
-            {
-                if (!string.IsNullOrEmpty(imageId))
-                {
-                    // Convert string Id to ObjectId
-                    var objectId = new ObjectId(imageId);
-                    // Create a filter to query the document by _id
-                    var filter = Builders<ImageDTO>.Filter.Eq("_id", objectId);
-                    // Find the document in MongoDB
-                    var image = await _imagesCollection.Find(filter).FirstOrDefaultAsync();
-                    if (image != null)
-                    {
-                        images.Add(image);
-                    }
-                }
-            }
-
-            return images;
-            /**
 
             var filter = Builders<ImageDTO>.Filter.Eq(x => x.DailyId, dailyId);
-            var cursor = await _imagesCollection.FindAsync(filter);
 
-            return await cursor.ToListAsync();*/
+            var images = await _imagesCollection.FindAsync(filter);
+
+            return await images.ToListAsync();
         }
 
-        public async Task<List<DailyView>> GetContactDailiesByUserIdAsync(Guid userId, DateTime lastTime)
+        public async Task<List<DailyView>> GetContactDailiesByUserIdAsync(Guid userId, DateTime? lastTime, Guid? lastDailyId)
         {
+            var limitTime = DateTime.Now.AddDays(-7);
 
+            // Adjusting the query to account for lastDailyId being null.
             var contactDailiesQuery = from userContact in _enteractDbContext.UserContacts
-                                 from daily in _enteractDbContext.Dailies
-                                 from user in _enteractDbContext.Users
-                                 where (userContact.User1Id == userId && daily.UserId == userContact.User2Id && user.UserId == userContact.User2Id)
-                                    || (userContact.User2Id == userId && daily.UserId == userContact.User1Id && user.UserId == userContact.User1Id)
-                                 select new DailyView
-                                 {
-                                     UserId = daily.UserId,
-                                     Caption = daily.Caption,
-                                     Created = daily.Created,
-                                     DailyId = daily.DailyId,
-                                     UserName = user.UserName,
-                                     UserPhotoId = user.UserPhotoId,
-                                 };
+                                      from daily in _enteractDbContext.Dailies
+                                      from user in _enteractDbContext.Users
+                                      where ((userContact.User1Id == userId && daily.UserId == userContact.User2Id && user.UserId == userContact.User2Id)
+                                         || (userContact.User2Id == userId && daily.UserId == userContact.User1Id && user.UserId == userContact.User1Id))
+                                          && (lastTime == null || daily.Created >= lastTime)
+                                           && (lastDailyId == null || daily.DailyId != lastDailyId)
+                                           && daily.Created >= limitTime
+                                      select new DailyView
+                                      {
+                                          UserId = daily.UserId,
+                                          Caption = daily.Caption,
+                                          Created = daily.Created,
+                                          DailyId = daily.DailyId,
+                                          UserName = user.UserName,
+                                          UserPhotoId = user.UserPhotoId,
+                                      };
 
             var contactDailies = await contactDailiesQuery.ToListAsync();
 
-            // Query for the user's own dailies
-            /**var userDailiesQuery = from daily in _enteractDbContext.Dailies
-                                   join user in _enteractDbContext.Users on daily.UserId equals user.UserId
-                                   where daily.UserId == userId
-                                   select new DailyView
-                                   {
-                                       UserId = userId,
-                                       Caption = daily.Caption,
-                                       Created = daily.Created,
-                                       DailyId = daily.DailyId,
-                                       UserName = user.UserName,
-                                       UserPhotoId = user.UserPhotoId,
-                                   };
-
-            // Combining both queries
-            var combinedQuery = contactDailiesQuery.Union(userDailiesQuery).OrderBy(q => q.Created);
-
-            var dailies = await combinedQuery.ToListAsync();*/
-
-            foreach (var dailie in contactDailies)
+            foreach (var daily in contactDailies)
             {
-                dailie.Images = await GetImagesByDailyIdAsync(dailie.DailyId);
+                daily.Images = await GetImagesByDailyIdAsync(daily.DailyId);
             }
 
             return contactDailies;
         }
 
-        public async Task<List<DailyView>> GetEntheriaDailiesByUserIdAsync(int userId, DateTime? lastTime, int? lastDailyId)
+        public async Task<List<DailyView>> GetEntheriaDailiesByUserIdAsync(Guid userId, DateTime? lastTime, Guid? lastDailyId)
         {
             var limitTime = DateTime.Now.AddDays(-7);
 

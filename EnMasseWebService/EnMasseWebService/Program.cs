@@ -27,8 +27,8 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CafeService>();
 builder.Services.AddScoped<DailyService>();
 
-builder.Services.Configure<DailyImageDatabaseSettings>(
-    builder.Configuration.GetSection("DailyImageDatabase"));
+builder.Services.Configure<EnteractMongoDatabaseSettings>(
+    builder.Configuration.GetSection("EnteractMongoDatabase"));
 
 
 builder.Services.AddControllers();
@@ -48,12 +48,12 @@ builder.Services.AddDbContext<EnteractDbContext>(options =>
     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
 // Register MongoDB client and configure settings
-builder.Services.Configure<DailyImageDatabaseSettings>(
-    builder.Configuration.GetSection("DailyImageDatabase"));
+builder.Services.Configure<EnteractMongoDatabaseSettings>(
+    builder.Configuration.GetSection("EnteractMongoDatabase"));
 
 builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
 {
-    var settings = serviceProvider.GetRequiredService<IOptions<DailyImageDatabaseSettings>>().Value;
+    var settings = serviceProvider.GetRequiredService<IOptions<EnteractMongoDatabaseSettings>>().Value;
     return new MongoClient(settings.ConnectionString);
 });
 
@@ -61,9 +61,17 @@ builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
 builder.Services.AddScoped(serviceProvider =>
 {
     var mongoClient = serviceProvider.GetRequiredService<IMongoClient>();
-    var settings = serviceProvider.GetRequiredService<IOptions<DailyImageDatabaseSettings>>().Value;
+    var settings = serviceProvider.GetRequiredService<IOptions<EnteractMongoDatabaseSettings>>().Value;
     var database = mongoClient.GetDatabase(settings.DatabaseName);
     return database.GetCollection<ImageDTO>(settings.DailyImagesCollectionName);
+});
+
+builder.Services.AddScoped(serviceProvider =>
+{
+    var mongoClient = serviceProvider.GetRequiredService<IMongoClient>();
+    var settings = serviceProvider.GetRequiredService<IOptions<EnteractMongoDatabaseSettings>>().Value;
+    var database = mongoClient.GetDatabase(settings.DatabaseName);
+    return database.GetCollection<SessionMessage>(settings.SessionMessagesCollectionName); 
 });
 
 var app = builder.Build();
@@ -76,7 +84,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 
 app.UseHttpsRedirection();
 

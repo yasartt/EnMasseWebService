@@ -18,7 +18,6 @@ namespace EnMasseWebService.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
-
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<UserContacts>()
@@ -58,7 +57,6 @@ namespace EnMasseWebService.Models
         public DbSet<Cafe> Cafes { get; set; }
         public DbSet<CafeUser> CafeUsers { get; set; }
         public DbSet<Daily> Dailies { get; set; }
-        //public DbSet<DailyType> DailyTypes { get; set; }
         public DbSet<UserContacts> UserContacts { get; set; }
         public DbSet<ContactRequest> ContactRequests { get; set; }
 

@@ -5,8 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace EnMasseWebService.Migrations
 {
-    public partial class startBackWithGuids : Migration
+    /// <inheritdoc />
+    public partial class azure_start_test : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -132,26 +134,6 @@ namespace EnMasseWebService.Migrations
                         principalColumn: "UserId");
                 });
 
-            migrationBuilder.CreateTable(
-                name: "DailyImages",
-                columns: table => new
-                {
-                    DailyImageId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DailyId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Id = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DailyImages", x => x.DailyImageId);
-                    table.ForeignKey(
-                        name: "FK_DailyImages_Dailies_DailyId",
-                        column: x => x.DailyId,
-                        principalTable: "Dailies",
-                        principalColumn: "DailyId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_CafeUsers_CafeId",
                 table: "CafeUsers",
@@ -178,11 +160,6 @@ namespace EnMasseWebService.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DailyImages_DailyId",
-                table: "DailyImages",
-                column: "DailyId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UserContacts_User1Id",
                 table: "UserContacts",
                 column: "User1Id");
@@ -193,6 +170,7 @@ namespace EnMasseWebService.Migrations
                 column: "User2Id");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
@@ -202,16 +180,13 @@ namespace EnMasseWebService.Migrations
                 name: "ContactRequests");
 
             migrationBuilder.DropTable(
-                name: "DailyImages");
+                name: "Dailies");
 
             migrationBuilder.DropTable(
                 name: "UserContacts");
 
             migrationBuilder.DropTable(
                 name: "Cafes");
-
-            migrationBuilder.DropTable(
-                name: "Dailies");
 
             migrationBuilder.DropTable(
                 name: "Users");

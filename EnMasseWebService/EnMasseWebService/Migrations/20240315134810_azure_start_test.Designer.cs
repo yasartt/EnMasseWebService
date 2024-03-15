@@ -12,17 +12,18 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnMasseWebService.Migrations
 {
     [DbContext(typeof(EnteractDbContext))]
-    [Migration("20240305080551_dailyImagesDeleted")]
-    partial class dailyImagesDeleted
+    [Migration("20240315134810_azure_start_test")]
+    partial class azure_start_test
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.25")
+                .HasAnnotation("ProductVersion", "8.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("EnMasseWebService.Models.Entities.Cafe", b =>
                 {
@@ -45,7 +46,7 @@ namespace EnMasseWebService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CafeUserId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CafeUserId"));
 
                     b.Property<Guid>("CafeId")
                         .HasColumnType("uniqueidentifier");
@@ -68,7 +69,7 @@ namespace EnMasseWebService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestId"));
 
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
@@ -144,7 +145,7 @@ namespace EnMasseWebService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserContactId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserContactId"));
 
                     b.Property<Guid>("User1Id")
                         .HasColumnType("uniqueidentifier");

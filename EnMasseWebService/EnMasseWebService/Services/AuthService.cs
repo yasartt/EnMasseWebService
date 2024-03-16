@@ -15,7 +15,7 @@ namespace EnMasseWebService.Services
     public class AuthService
     {
         private readonly EnteractDbContext _context;
-        private readonly string _jwtSecretKey = "Ls270QPU4Eiwjf00kdre"; // Replace with your actual secret key
+        private readonly string _jwtSecretKey = "7qYWyFz8F31gmmdBhT8HT6aEg4XfNXwr"; // Replace with your actual secret key
 
         public AuthService(EnteractDbContext enteractDbContext) {
             _context = enteractDbContext;

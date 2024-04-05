@@ -16,8 +16,8 @@ namespace EnMasseWebService.Models.Entities
         [ForeignKey("User")]
         public Guid UserId { get; set; }
 
-        public User User { get; set; }
+        public User? User { get; set; }
 
-        public Cafe cafe { get; set; }
+        public Cafe? cafe { get; set; }
     }
 }

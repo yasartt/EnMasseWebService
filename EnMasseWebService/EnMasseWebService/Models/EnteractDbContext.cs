@@ -59,6 +59,7 @@ namespace EnMasseWebService.Models
         public DbSet<Daily> Dailies { get; set; }
         public DbSet<UserContacts> UserContacts { get; set; }
         public DbSet<ContactRequest> ContactRequests { get; set; }
+        public DbSet<CafeUserLastCollectedMessages> UserLastCollectedMessages { get; set; }
 
     }
 }

@@ -59,10 +59,10 @@ namespace EnMasseWebService.Controllers
 
             if (dailies == null || dailies.Count == 0)
             {
-                return NotFound();
+                return Ok(null);
             }
 
-            return dailies;
+            return Ok(dailies);
         }
 
         [HttpPost]

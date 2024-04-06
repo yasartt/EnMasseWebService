@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Collections.Concurrent;
 
 namespace SignalRChat
 {
@@ -12,10 +13,10 @@ namespace SignalRChat
     {
         private readonly EnteractDbContext _dbContext;
         private readonly CafeService _cafeService; // Add CafeService dependency
-        private readonly IDictionary<string, CafeUser> _connection;
+        private readonly ConcurrentDictionary<string, CafeUser> _connection;
         private readonly IMongoCollection<SessionMessage> _sessionMessagesCollection;
 
-        public CafeHub(EnteractDbContext dbContext, IDictionary<string, CafeUser> connection, IMongoCollection<SessionMessage> sessionMessagesCollection, CafeService cafeService) // Add CafeService to the constructor
+        public CafeHub(EnteractDbContext dbContext, ConcurrentDictionary<string, CafeUser> connection, IMongoCollection<SessionMessage> sessionMessagesCollection, CafeService cafeService) // Add CafeService to the constructor
         {
             _dbContext = dbContext;
             _connection = connection;
@@ -60,14 +61,12 @@ namespace SignalRChat
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            if(!_connection.TryGetValue(Context.ConnectionId, out CafeUser cafeUser))
+            // Use ConcurrentDictionary's thread-safe methods for removal
+            if (_connection.TryRemove(Context.ConnectionId, out CafeUser cafeUser))
             {
-                return base.OnDisconnectedAsync(exception);
+                Clients.Group($"Cafe_{cafeUser.CafeId}").SendAsync("ReceiveMessage", "System", $"{Context.ConnectionId} has left the cafe.");
             }
 
-            Clients.Group($"Cafe_{cafeUser.CafeId}").SendAsync("ReceiveMessage", "System", $"{Context.ConnectionId} has left the cafe.");
-
-            SendConnectorUser(cafeUser.CafeId.ToString());
             return base.OnDisconnectedAsync(exception);
         }
 
@@ -92,6 +91,7 @@ namespace SignalRChat
                     .SendAsync("ReceiveMessage", cafeUser.UserId, message, DateTime.Now);
             }
         }
+
 
         public async Task ReconnectToAllGroupsAndRetrieveNewMessages(string userId)
         {
